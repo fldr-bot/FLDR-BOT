@@ -29,7 +29,9 @@ burntID = 246297096595046401 # burnt
 teoID = 425762097503141898 # teo
 ptinosqID = 313021770321887233 # burnt alt
 bananaID = 135169858689171456 # banana
-BotStuffChannel = 611269506450456576 # Bot-chat-mod channel
+BotStuffChannel = 611665344079200344 # THIS IS THE DEV SERVER CHANNEL
+
+
 
 #More constants for ease of use in code
 upvoteEmoji = '⬆️'
@@ -48,6 +50,8 @@ elif socket.gethostname() == 'DESKTOP-8M1K2G7':
     BOTPC = "Burnt's laptop"
 elif socket.gethostname()== 'DESKTOP-F34TDET':
     BOTPC = "Burnt's RTX Workstation - Big fleks"
+elif socket.gethostname()== 'DESKTOP-6AT5I43':
+    BOTPC = "Max's laptop"
 else:
     BOTPC= socket.gethostname()
 
@@ -68,6 +72,7 @@ Copy paste that output into the elif and add it under the last elif.
 async def on_message(message):
     #Do Stuff - THERE IS NO CTX WITH EVENTS.
     #message.content turns it into a readable string.
+
     """
     Example:
     await message.channel.send("message.content")
@@ -81,6 +86,34 @@ async def on_ready():
     ch = client.get_channel(BotStuffChannel) # Get channel from channel ID
     await ch.send(f"Deployed on \n```{str(datetime.datetime.now())}```\n\nServer: {BOTPC}") # Send the time deployed and the PC
     print('We have logged in as {0.user}'.format(client)) # Print info to console
+
+@client.event
+async def on_command_completion(ctx): # discordpy builtin that detects commands being run https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.on_command_completion
+    try:
+        print(f"Ran command: {ctx.command.name}")
+        with open("commandCount.txt", "r+") as txtFile: # r+ means read + other features
+            value = txtFile.read() # read whatever is in there
+            print(f"{value} - current value") # debugging
+            if value.isdigit() != True: # if it's empty or a word e.g None
+                value = 0
+            NewValue = int(value)+1
+        with open("commandCount.txt", "w") as txtFile2: # using w cos I don't wanna risk appending
+            txtFile2.write(str(NewValue)) # over writes with +1
+            print(f"{NewValue} - New value") # debugging
+        return True
+    except Exception as e:
+        print(f"Error with txt Manager - {e}")
+        return False
+
+        #copy pasted from function, if this works we won't need the function any more.
+
+
+
+
+
+#events will always go to top just to keep our stuff neat
+#layout is functions (not cmds), events, cmds
+
 
 async def check_if_moderator(ctx):
     #if await check_if_moderator(ctx): #use this for if statements.
@@ -102,6 +135,81 @@ async def check_if_dev(ctx): # Use this for commands that only we should have ac
 @client.command()
 async def ping(ctx):
     await ctx.message.channel.send(f'Pong: {int(round(client.latency, 3) * 1000)} ms') # This was copy pasted from StackOverflow I have no clue what it means or does.
+
+
+@client.command(aliases=["kiss"])
+async def smooch(ctx, member: typing.Union[discord.Member, int, str] = None):
+    """
+    By Max
+
+    example: -smooch @user // -smooch userID // -smooch user#1234
+    """
+    Sender = ctx.message.author.mention
+
+    await ctx.message.channel.send(f"{Sender} gave {member.mention} a smooch! How romantic!")
+
+
+"""async def txt_management(ctx, command_name):
+    #if await txt_management(ctx):
+    try:
+        with open("commandCount.txt", "r+") as txtFile: # r+ means read + other features
+            value = txtFile.read() # read whatever is in there
+            print(f"{value} - current value") # debugging
+            if value.isdigit() != True: # if it's empty or a word e.g None
+                value = 0
+            NewValue = int(value)+1
+        with open("commandCount.txt", "w") as txtFile2: # using w cos I don't wanna risk appending
+            txtFile2.write(str(NewValue)) # over writes with +1
+            print(f"{NewValue} - New value") # debugging
+        return True
+    except Exception as e:
+        print(f"Error with txt Manager - {e}")
+        return False
+
+"""
+@client.command(aliases=["stats"])
+async def statistics(ctx):
+
+    with open("commandCount.txt", "r+") as txtFile: # r+ means read + other features
+        value = txtFile.read() # read whatever is in there
+
+    await ctx.message.channel.send(f"This bot has run {value} commands!")
+
+
+
+@client.command(name="8ball")
+async def _ball(ctx, question = None):
+
+    """
+    By Max
+
+    example: -8ball [question]
+    """
+
+    noArgsResponses = [
+        "Hey! Give me something to work with here!",
+        "Stop wasting my time, I'm a busy bot!",
+        "Please, input a question, I beg of you."
+    ]
+
+    if question == None:
+        await ctx.message.channel.send(f"{random.choice(noArgsResponses)}")
+
+    else:
+
+        questionResponses = [
+            "I'd say so.",
+            "Absolutely.",
+            "No doubt in my mind.",
+            "It depends on what you feel in your heart!",
+            "Not sure, what do you think I am? A magic 8 ball?",
+            "Ask me again when I get a work ethic.",
+            "Dear gosh no, never.",
+            "I wouldn't advise it.",
+            "I'd say no, but ask BananaFalls."
+        ]
+
+        await ctx.message.channel.send(f"{random.choice(questionResponses)}")
 
 @client.command(aliases=["game"])
 async def play(ctx,*, gamer=None):
