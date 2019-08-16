@@ -395,6 +395,109 @@ async def check_if_dev(ctx):
 
 
 ################################################################################################################
+# H E L P ######################################################################################################
+################################################################################################################
+#page.help
+
+
+@client.command()
+async def help(ctx, argument="None"):
+    """
+    Burnt 16/08/2019
+
+    Help command - takes argument of help type
+
+    """
+
+    ModerationSend ="""
+
+    [m] - Mod only
+    [d] - Dev only
+
+    **[m] example** - Example here
+
+    **[d] example** - Example here
+
+    """
+
+    UtilitySend ="""
+
+    [m] - Mod only
+    [d] - Dev only
+
+    **ping** - Ping the bot. Responds in ms
+
+    **[m] play** - Sets bot's activity as "Playing [argumentS]"
+    Usage: play argumentS HERE
+    """
+
+    FunSend ="""
+
+    **smooch/kiss** - Give another person a kiss!
+    Usage: smooch @user
+
+    """
+
+    OtherSend ="""
+
+    [m] - Mod only
+    [d] - Dev only
+
+    **disclaimer** - Gives info about what data the bot collects and uses in what ways.
+
+    **premium** - Submit your premium code to get the premium role
+    Usage: premium CODEHERE
+
+    **[d] evaluate** - Evaluate python code
+    Usage:
+    evaluate \```py
+    #CODE
+    \```
+
+    """
+
+    sendDM = False
+    embed =discord.Embed(title="Help", color=0x11df25)
+    if argument == "None":
+        embed.add_field(name="Error:", value="No argument provided. Please use one of these arguments:\nAll, Moderation, Utility, Other, Fun", inline=True)
+
+    else:
+        if argument.lower() == "all":
+            sendDM = True
+            whoToSendTo = ctx.message.author
+            embed.add_field(name="Moderation", value=ModerationSend, inline=False) # Moderation field
+            embed.add_field(name="Utility", value=UtilitySend, inline=False) # Utility field
+            embed.add_field(name="Fun", value=FunSend, inline=False) # Fun field
+            embed.add_field(name="Other", value=OtherSend, inline=False) # Other field
+
+        elif argument.lower() == "moderation":
+            embed.add_field(name="Moderation", value=ModerationSend, inline=False) # Moderation field
+
+        elif argument.lower() == "utility":
+            embed.add_field(name="Utility", value=UtilitySend, inline=False) # Utility field
+
+        elif argument.lower() == "fun":
+            embed.add_field(name="Fun", value=FunSend, inline=False) # Fun field
+
+        elif argument.lower() == "other":
+            embed.add_field(name="Other", value=OtherSend, inline=False) # Other field
+
+        else:
+            embed.add_field(name="Error", value="Invalid argument. Arugements:**\nModeration, Utility, Fun, All, Other**", inline=False)
+
+    if sendDM:
+        try:
+            await whoToSendTo.send(embed=embed)
+            await ctx.message.channel.send(f"{successEmoji} Sent to DMs!")
+
+        except Exception as e:
+            print(f"Error with COMMAND help - {e}")
+            await ctx.message.channel.send(f"Error. Do you have DMs set to public? If not, the bot can't DM you the rules. If you really don't want to turn them on, manually check each help arugement.")
+    else:
+        await ctx.message.channel.send(embed=embed)
+
+
+################################################################################################################
 # E N D ########################################################################################################
 ################################################################################################################
 #page.end
