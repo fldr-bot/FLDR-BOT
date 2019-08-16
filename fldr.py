@@ -1,4 +1,8 @@
-filter=["faggot","nigger","fag","dyke","nigga","nibba","pornhub","redtube","xnxx","secretwordnooneknows"] # This is the filter - add any naughty words here, keep a testing word to test filter.
+################################################################################################################
+# S T A R T ####################################################################################################
+################################################################################################################
+#page.start
+
 
 import discord
 from discord.ext.commands import Bot
@@ -16,6 +20,13 @@ import string
 import os
 import typing
 
+
+################################################################################################################
+# C O N F I G S ################################################################################################
+################################################################################################################
+#page.configs
+
+
 ConfigLocation = './ignore/config.json' # Specify config.json location
 r=open(ConfigLocation,"r") # Open the config file
 data=json.load(r) # Turn it into a dictionary (Python JSON)
@@ -23,19 +34,43 @@ ConfigJSON=list(data.values()) # Turn JSON into list
 PREFIX=ConfigJSON[0] # Prefix
 TOKEN=ConfigJSON[1] # Bot token
 GAME=ConfigJSON[2] # Previous set game - It's stored so that on bot restart it sets its game automatically
+
+FilterLocation = './ignore/filter.txt' # Specify location of fitler.txt
+with open(FilterLocation, "r") as fil:
+    fil=fil.read()
+    filter=fil.split("\n") # Take every newline and add it to an array
+    try:
+        filter.remove('') # Using try/except to avoid crashes caused by '' or ' ' not existing
+    except Exception:
+        pass
+
+    try:
+        filter.remove(' ')
+    except Exception:
+        pass
+
+
+################################################################################################################
+# D I S C O R D P Y ############################################################################################
+################################################################################################################
+#page.discordpy
+
+
 client = commands.Bot(command_prefix=PREFIX, case_insensitive=True)
 client.remove_command('help') # Discordpy comes with default help command so we scrap that to use our own.
 
-#Constants for ease of use further into the code
+
+################################################################################################################
+# C O N S T A N T S ############################################################################################
+################################################################################################################
+#page.constants
+
+
 burntID = 246297096595046401 # Burnt
 teoID = 425762097503141898 # Teo
 ptinosqID = 313021770321887233 # Burnt alt
 bananaID = 135169858689171456 # Banana
 BotStuffChannel = 611665344079200344 # THIS IS THE DEV SERVER CHANNEL
-
-
-
-#More constants for ease of use in code
 upvoteEmoji = '⬆️'
 downvoteEmoji = '⬇️'
 toolsEmoji = ":tools:"
@@ -44,7 +79,13 @@ failEmoji = ":no_entry:"
 bookEmoji = ":book:"
 warningEmoji = ":name_badge: "
 
-#This basically logs where the bot is being run.
+
+################################################################################################################
+# H O S T N A M E ##############################################################################################
+################################################################################################################
+#page.hostname
+
+
 BOTPC = "UNKNOWN PC" # Default
 if socket.gethostname() == 'EC2AMAZ-96PQUE8':
     BOTPC = "Amazon Web Server" #AWS - Main bot is hosted here
@@ -71,10 +112,10 @@ Copy paste that output into the elif and add it under the last elif.
 """
 
 
-
 ################################################################################################################
 # E V E N T S ##################################################################################################
 ################################################################################################################
+#page.events
 
 
 @client.event
@@ -123,6 +164,7 @@ async def on_command_completion(ctx): # Discordpy builtin that detects commands 
 ################################################################################################################
 # C O M M A N D S ##############################################################################################
 ################################################################################################################
+#page.commands
 
 
 @client.command()
@@ -289,6 +331,7 @@ async def evaluate(ctx, *, cmd):
 ################################################################################################################
 # F U N C T I O N S ############################################################################################
 ################################################################################################################
+#page.functions
 
 
 def insert_returns(body):
@@ -352,19 +395,30 @@ async def check_if_dev(ctx):
 
 
 ################################################################################################################
-# D I S C O R D P Y ############################################################################################
+# E N D ########################################################################################################
 ################################################################################################################
-
+#page.end
 
 client.run(TOKEN)# THIS MUST ALWAYS BE THE ON THE LAST LINE
 
-
-################################################################################################################
-# E N D ########################################################################################################
-################################################################################################################
-
-
 """
+INFO
+
+Every section of the bot code is split using
+##############
+# N A M E  ###
+##############
+#examplehere
+
+The examplehere is so that you can easily navigate to that section. Just do ctrl+f and type:
+page.
+
+This'll cycle you through all the sections so when the bot ends up having 1k+ lines of code, it's easy to go from start to functions
+
+Please keep commands under the commands section etc.
+
+Let people know when you're importing something new since we might need to install it with pip
+
 USEFUL SHIT TO COPY PASTE
 
 await ctx.message.channel.send("message here")
