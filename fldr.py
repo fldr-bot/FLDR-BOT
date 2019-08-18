@@ -1,4 +1,8 @@
-filter=["faggot","nigger","fag","dyke","nigga","nibba","pornhub","redtube","xnxx","secretwordnooneknows"] # This is the filter - add any naughty words here, keep a testing word to test filter.
+################################################################################################################
+# S T A R T ####################################################################################################
+################################################################################################################
+#page.start
+
 
 import discord
 from discord.ext.commands import Bot
@@ -16,6 +20,13 @@ import string
 import os
 import typing
 
+
+################################################################################################################
+# C O N F I G S ################################################################################################
+################################################################################################################
+#page.configs
+
+
 ConfigLocation = './ignore/config.json' # Specify config.json location
 r=open(ConfigLocation,"r") # Open the config file
 data=json.load(r) # Turn it into a dictionary (Python JSON)
@@ -23,19 +34,43 @@ ConfigJSON=list(data.values()) # Turn JSON into list
 PREFIX=ConfigJSON[0] # Prefix
 TOKEN=ConfigJSON[1] # Bot token
 GAME=ConfigJSON[2] # Previous set game - It's stored so that on bot restart it sets its game automatically
+
+FilterLocation = './ignore/filter.txt' # Specify location of fitler.txt
+with open(FilterLocation, "r") as fil:
+    fil=fil.read()
+    filter=fil.split("\n") # Take every newline and add it to an array
+    try:
+        filter.remove('') # Using try/except to avoid crashes caused by '' or ' ' not existing
+    except Exception:
+        pass
+
+    try:
+        filter.remove(' ')
+    except Exception:
+        pass
+
+
+################################################################################################################
+# D I S C O R D P Y ############################################################################################
+################################################################################################################
+#page.discordpy
+
+
 client = commands.Bot(command_prefix=PREFIX, case_insensitive=True)
 client.remove_command('help') # Discordpy comes with default help command so we scrap that to use our own.
 
-#Constants for ease of use further into the code
+
+################################################################################################################
+# C O N S T A N T S ############################################################################################
+################################################################################################################
+#page.constants
+
+
 burntID = 246297096595046401 # Burnt
 teoID = 425762097503141898 # Teo
 ptinosqID = 313021770321887233 # Burnt alt
 bananaID = 135169858689171456 # Banana
 BotStuffChannel = 611665344079200344 # THIS IS THE DEV SERVER CHANNEL
-
-
-
-#More constants for ease of use in code
 upvoteEmoji = '⬆️'
 downvoteEmoji = '⬇️'
 toolsEmoji = ":tools:"
@@ -44,7 +79,13 @@ failEmoji = ":no_entry:"
 bookEmoji = ":book:"
 warningEmoji = ":name_badge: "
 
-#This basically logs where the bot is being run.
+
+################################################################################################################
+# H O S T N A M E ##############################################################################################
+################################################################################################################
+#page.hostname
+
+
 BOTPC = "UNKNOWN PC" # Default
 if socket.gethostname() == 'EC2AMAZ-96PQUE8':
     BOTPC = "Amazon Web Server" #AWS - Main bot is hosted here
@@ -71,10 +112,10 @@ Copy paste that output into the elif and add it under the last elif.
 """
 
 
-
 ################################################################################################################
 # E V E N T S ##################################################################################################
 ################################################################################################################
+#page.events
 
 
 @client.event
@@ -123,6 +164,7 @@ async def on_command_completion(ctx): # Discordpy builtin that detects commands 
 ################################################################################################################
 # C O M M A N D S ##############################################################################################
 ################################################################################################################
+#page.commands
 
 
 @client.command()
@@ -289,6 +331,7 @@ async def evaluate(ctx, *, cmd):
 ################################################################################################################
 # F U N C T I O N S ############################################################################################
 ################################################################################################################
+#page.functions
 
 
 def insert_returns(body):
@@ -352,19 +395,133 @@ async def check_if_dev(ctx):
 
 
 ################################################################################################################
-# D I S C O R D P Y ############################################################################################
+# H E L P ######################################################################################################
 ################################################################################################################
+#page.help
 
 
-client.run(TOKEN)# THIS MUST ALWAYS BE THE ON THE LAST LINE
+@client.command()
+async def help(ctx, argument="None"):
+    """
+    Burnt 16/08/2019
+
+    Help command - takes argument of help type
+
+    """
+
+    ModerationSend ="""
+
+    [m] - Mod only
+    [d] - Dev only
+
+    **[m] example** - Example here
+
+    **[d] example** - Example here
+
+    """
+
+    UtilitySend ="""
+
+    [m] - Mod only
+    [d] - Dev only
+
+    **ping** - Ping the bot. Responds in ms
+
+    **[m] play** - Sets bot's activity as "Playing [argumentS]"
+    Usage: play argumentS HERE
+    """
+
+    FunSend ="""
+
+    **smooch/kiss** - Give another person a kiss!
+    Usage: smooch @user
+
+    """
+
+    OtherSend ="""
+
+    [m] - Mod only
+    [d] - Dev only
+
+    **disclaimer** - Gives info about what data the bot collects and uses in what ways.
+
+    **premium** - Submit your premium code to get the premium role
+    Usage: premium CODEHERE
+
+    **[d] evaluate** - Evaluate python code
+    Usage:
+    evaluate \```py
+    #CODE
+    \```
+
+    """
+
+    sendDM = False
+    embed =discord.Embed(title="Help", color=0x11df25)
+    if argument == "None":
+        embed.add_field(name="Error:", value="No argument provided. Please use one of these arguments:\nAll, Moderation, Utility, Other, Fun", inline=True)
+
+    else:
+        if argument.lower() == "all":
+            sendDM = True
+            whoToSendTo = ctx.message.author
+            embed.add_field(name="Moderation", value=ModerationSend, inline=False) # Moderation field
+            embed.add_field(name="Utility", value=UtilitySend, inline=False) # Utility field
+            embed.add_field(name="Fun", value=FunSend, inline=False) # Fun field
+            embed.add_field(name="Other", value=OtherSend, inline=False) # Other field
+
+        elif argument.lower() == "moderation":
+            embed.add_field(name="Moderation", value=ModerationSend, inline=False) # Moderation field
+
+        elif argument.lower() == "utility":
+            embed.add_field(name="Utility", value=UtilitySend, inline=False) # Utility field
+
+        elif argument.lower() == "fun":
+            embed.add_field(name="Fun", value=FunSend, inline=False) # Fun field
+
+        elif argument.lower() == "other":
+            embed.add_field(name="Other", value=OtherSend, inline=False) # Other field
+
+        else:
+            embed.add_field(name="Error", value="Invalid argument. Arugements:**\nModeration, Utility, Fun, All, Other**", inline=False)
+
+    if sendDM:
+        try:
+            await whoToSendTo.send(embed=embed)
+            await ctx.message.channel.send(f"{successEmoji} Sent to DMs!")
+
+        except Exception as e:
+            print(f"Error with COMMAND help - {e}")
+            await ctx.message.channel.send(f"Error. Do you have DMs set to public? If not, the bot can't DM you the rules. If you really don't want to turn them on, manually check each help arugement.")
+    else:
+        await ctx.message.channel.send(embed=embed)
 
 
 ################################################################################################################
 # E N D ########################################################################################################
 ################################################################################################################
+#page.end
 
+client.run(TOKEN)# THIS MUST ALWAYS BE THE ON THE LAST LINE
 
 """
+INFO
+
+Every section of the bot code is split using
+##############
+# N A M E  ###
+##############
+#examplehere
+
+The examplehere is so that you can easily navigate to that section. Just do ctrl+f and type:
+page.
+
+This'll cycle you through all the sections so when the bot ends up having 1k+ lines of code, it's easy to go from start to functions
+
+Please keep commands under the commands section etc.
+
+Let people know when you're importing something new since we might need to install it with pip
+
 USEFUL SHIT TO COPY PASTE
 
 await ctx.message.channel.send("message here")
